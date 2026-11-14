@@ -1,83 +1,85 @@
-# ui/app.py
-
 import streamlit as st
-import requests
 
-API_URL = "http://localhost:8000/predict"
-
+# Configure the Streamlit page
 st.set_page_config(
-    page_title="Public Mood Detection",
+    page_title="Public Mood Detection AI",
     page_icon="🧠",
-    layout="centered"
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
-st.title("🧠 AI Powered Sentiment Analysis")
-st.write(
-    "Enter a sentence and the AI model will detect the sentiment."
-)
+# Load Custom CSS
+def local_css(file_name):
+    with open(file_name) as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-# Text input
-user_text = st.text_area(
-    "Enter your text:",
-    height=150
-)
+import os
+try:
+    css_path = os.path.join(os.path.dirname(__file__), "assets", "style.css")
+    local_css(css_path)
+except FileNotFoundError:
+    st.warning("CSS file not found. Ensure you are running from the project root.")
 
-if st.button("Analyze Sentiment"):
+# Import Sidebar after configuring page to ensure st variables are ready
+from components.sidebar import load_sidebar
 
-    if user_text.strip() == "":
-        st.warning("Please enter some text.")
-    else:
+def main():
+    # Load sidebar with default index 0 (Home)
+    load_sidebar(default_index=0)
+    
+    # Hero Section
+    st.markdown("<h1 class='hero-title'>Public Mood Detection AI</h1>", unsafe_allow_html=True)
+    st.markdown("<p class='hero-subtitle'>Advanced biometric and text analysis to detect crowd sentiment and individual mood in real-time.</p>", unsafe_allow_html=True)
+    
+    # Main Content Area
+    col1, col2, col3 = st.columns([1, 2, 1])
+    
+    with col2:
+        overview_html = """
+<div class='glass-card'>
+<h3 style='color: #00ADB5; text-align: center; margin-bottom: 20px;'>System Overview</h3>
+<p style='text-align: center; line-height: 1.6;'>
+Welcome to the Public Mood Detection Dashboard. This graduation project leverages state-of-the-art 
+artificial intelligence to analyze human emotion through multiple modalities. 
+</p>
+</div>
+"""
+        st.markdown(overview_html, unsafe_allow_html=True)
+        
+        st.write("")
+        
+        # Action Buttons
+        btn_col1, btn_col2, btn_col3 = st.columns([1, 2, 1])
+        with btn_col2:
+            if st.button("Text Detection Mode", use_container_width=True):
+                st.switch_page("pages/text_detection.py")
+                
+    st.write("---")
+    
+    # Feature Cards
+    st.markdown("<h2 style='text-align: center; margin-bottom: 30px;'>Core Capabilities</h2>", unsafe_allow_html=True)
+    
+    fcol1, fcol2 = st.columns(2)
+    
+    with fcol1:
+        text_sentiment_html = """
+<div class='glass-card' style='text-align: center;'>
+<h1 style='color: #00ADB5;'>📝</h1>
+<h4>Text Sentiment</h4>
+<p style='font-size: 0.9rem; color: #A0AAB2;'>Analyze the underlying emotion of written text using NLP.</p>
+</div>
+"""
+        st.markdown(text_sentiment_html, unsafe_allow_html=True)
+        
+    with fcol2:
+        analytics_dashboard_html = """
+<div class='glass-card' style='text-align: center;'>
+<h1 style='color: #00ADB5;'>📊</h1>
+<h4>Analytics Dashboard</h4>
+<p style='font-size: 0.9rem; color: #A0AAB2;'>Comprehensive metrics and visualizations of mood trends.</p>
+</div>
+"""
+        st.markdown(analytics_dashboard_html, unsafe_allow_html=True)
 
-        with st.spinner("Analyzing sentiment..."):
-
-            payload = {
-                "text": user_text
-            }
-
-            response = requests.post(API_URL, json=payload)
-
-        if response.status_code == 200:
-
-            result = response.json()
-
-            sentiment = result["sentiment"]
-            confidence = result["confidence"]
-
-            # Emoji
-            if sentiment == "positive":
-                emoji = "😊"
-            elif sentiment == "negative":
-                emoji = "😠"
-            else:
-                emoji = "😐"
-
-            st.success(
-                f"{emoji} Sentiment: {sentiment.upper()} "
-                f"({confidence*100:.1f}% confidence)"
-            )
-
-            st.write("### Probabilities")
-
-            for label, prob in result["probabilities"].items():
-
-                st.write(f"**{label}**")
-
-                st.progress(prob)
-
-        else:
-            st.error("API request failed.")
-
-# Sidebar
-with st.sidebar:
-
-    st.header("About")
-
-    st.write(
-        "This project uses a Transformer-based BERT model "
-        "for sentiment analysis and public mood detection."
-    )
-
-    st.write(
-        "Built with HuggingFace Transformers, FastAPI, "
-        "PyTorch, and Streamlit."
-    )
+if __name__ == "__main__":
+    main()
