@@ -9,6 +9,20 @@ Public Mood Detection is a graduation project that provides an interactive inter
 
 ## Main Features
 
+## Application Screenshots
+
+### Dashboard
+![Dashboard](screenshots/dashboard.png)
+
+### Text Detection
+![Text Detection](screenshots/text-detection.png)
+
+### Analytics Overview
+![Analytics Overview](screenshots/analytics-overview.png)
+
+### Analytics Charts
+![Analytics Charts](screenshots/analytics-charts.png)
+
 - **Dashboard:** Overview of sentiment analysis and project insights.
 - **Text Detection:** Analyze text and display its detected sentiment.
 - **Analytics:** Explore sentiment trends and visual analytics.
